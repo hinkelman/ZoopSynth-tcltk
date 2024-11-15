@@ -2,7 +2,9 @@ library(tcltk)
 library(zooper)
 
 source_codes = c("EMP", "FRP", "FMWT", "STN", "20mm", "DOP")
+size_codes = c("Micro", "Meso", "Macro")
 
+tclServiceMode(FALSE)
 base <- tktoplevel()
 tkwm.title(base, "ZoopSynth")
 
@@ -16,12 +18,25 @@ tclvalue(sources) = c("Environmental Monitoring Program (EMP)", "Fish Restoratio
                       "Fall Midwater Trawl (FMWT)", "Summer Townet Survey (STN)", "20mm Survey (20mm)",
                       "Directed Outflow Project (DOP)")
 size_classes = tclVar()
-tclvalue(size_classes) = c("Micro", "Meso", "Macro")
+tclvalue(size_classes) = size_codes
 
 mainframe <- ttkframe(base, padding = c(6, 6, 6, 6))
-sources_lb = tklistbox(mainframe, listvariable = sources, selectmode = "multiple", height = 6)
-sizes_lb = tklistbox(mainframe, listvariable = size_classes, selectmode = "multiple", height = 3)
-months_lb = tklistbox(mainframe, listvariable = months, selectmode = "multiple", height = 6)
+sources_lb = tklistbox(mainframe, listvariable = sources, selectmode = "multiple", 
+                       exportselection = FALSE, height = 6)
+sizes_lb = tklistbox(mainframe, listvariable = size_classes, selectmode = "multiple", 
+                     exportselection = FALSE, height = 3)
+months_lb = tklistbox(mainframe, listvariable = months, selectmode = "multiple", 
+                      exportselection = FALSE, height = 6)
+
+fetch_data <- function(){
+  out = Zoopsynther(Data_type = tclvalue(datatype),
+                    Sources = source_codes[as.numeric(tkcurselection(sources_lb)) + 1],
+                    Size_class = size_codes[as.numeric(tkcurselection(sizes_lb)) + 1],
+                    Months = as.numeric(tkcurselection(months_lb)) + 1, 
+                    Years = as.numeric(tclvalue(min_yr)):as.numeric(tclvalue(max_yr)),
+                    All_env = FALSE)
+  print(head(out))
+}
 
 tkgrid(mainframe)
 tkgrid(ttklabel(mainframe, text = "Data Type"),
@@ -54,9 +69,10 @@ tkgrid(ttklabel(mainframe, text = "Months"),
        row = 8, column = 0, sticky = "we", padx = 5, pady = 5)
 tkgrid(months_lb, row = 9, column = 0, columnspan = 3, sticky = "we", padx = 5)
 
-tkgrid(tkbutton(mainframe, text = "Run", command=function() print(as.numeric(tkcurselection(months_lb)))),
+tkgrid(tkbutton(mainframe, text = "Run", command = fetch_data),
        row = 10, column = 0, columnspan = 3, sticky = "we", padx = 5, pady = 5)
 
-# Start the main event loop
-tkwait.window(base)
+tclServiceMode(TRUE)
+# # Start the main event loop
+# tkwait.window(base)
 
