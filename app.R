@@ -20,7 +20,7 @@ tclvalue(sources) = c("Environmental Monitoring Program (EMP)", "Fish Restoratio
 size_classes = tclVar()
 tclvalue(size_classes) = size_codes
 
-mainframe <- ttkframe(base, padding = c(6, 6, 6, 6))
+mainframe = ttkframe(base, padding = c(10, 10, 10, 10))
 sources_lb = tklistbox(mainframe, listvariable = sources, selectmode = "multiple", 
                        exportselection = FALSE, height = 6)
 sizes_lb = tklistbox(mainframe, listvariable = size_classes, selectmode = "multiple", 
@@ -71,6 +71,10 @@ tkgrid(months_lb, row = 9, column = 0, columnspan = 3, sticky = "we", padx = 5)
 
 tkgrid(tkbutton(mainframe, text = "Run", command = fetch_data),
        row = 10, column = 0, columnspan = 3, sticky = "we", padx = 5, pady = 5)
+
+tkselection.set(sources_lb, 0)
+tkselection.set(sizes_lb, 1)
+for (i in 0:11) tkselection.set(months_lb, i)
 
 tclServiceMode(TRUE)
 # # Start the main event loop
