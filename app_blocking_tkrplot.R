@@ -11,7 +11,7 @@ tclServiceMode(FALSE)
 # create tcl variables and objects
 source("tcl_vars.R")
 # specific to the tkrplot version
-zoop_plot = tkrplot::tkrplot(mainframe, plot_zoop, vscale = 1.2, hscale = 2)
+zoop_plot = tkrplot::tkrplot(mainframe, tkrplot_zoop, vscale = 1.2, hscale = 2)
 
 # includes the main input grid
 source("ui.R")

@@ -12,16 +12,6 @@ fetch <- function(...){
     prep_samples()
 }
 
-fetch_and_tkrreplot <- function(...){
-  fetch()
-  tkrplot::tkrreplot(zoop_plot)
-}
-
-plot_zoop <- function(...){
-  if (is.null(zoop_data)) return() # too early...
-  plot_samples(zoop_data, source_colors)
-}
-
 prep_samples <- function(data){
   tmp = data |>
     mutate(MonthNum = month(Date)) |> 
@@ -38,8 +28,28 @@ prep_samples <- function(data){
     tidyr::complete(Source, Year, Month, fill = list(N_samples = NA_integer_))
 }
 
-plot_samples <- function(data, source_colors){
-  p = ggplot(data, aes(x=Year, y = N_samples, color = Source)) +
+fetch_and_tkrreplot <- function(...){
+  fetch()
+  tkrplot::tkrreplot(zoop_plot)
+}
+
+tkrplot_zoop <- function(...){
+  if (is.null(zoop_data)) return() # too early...
+  tkrplot_samples(zoop_data, source_colors)
+}
+
+fetch_and_plot <- function(...){
+  fetch()
+  plot_zoop()
+}
+
+plot_zoop <- function(...){
+  if (is.null(zoop_data)) return() # too early...
+  plot_samples(zoop_data, source_colors)
+}
+
+ggplot_samples <- function(data, source_colors){
+  ggplot(data, aes(x=Year, y = N_samples, color = Source)) +
     geom_line() +
     geom_point(size = 1) +
     facet_wrap(~ Month) +
@@ -49,5 +59,24 @@ plot_samples <- function(data, source_colors){
     theme(text = element_text(size = 14),
           panel.spacing.x = unit(15, "points")) +
     scale_color_manual(name = "Source", values = source_colors)
-  plot(p)
 }
+
+tkrplot_samples <- function(data, source_colors){
+  # plots in window provided by trkplot
+  plot(ggplot_samples(data, source_colors))
+}
+
+plot_samples <- function(data, source_colors){
+  # need to open device window before plotting
+  # set the device type based on the OS
+  os = Sys.info()[['sysname']]
+  if (os == "Darwin"){
+    quartz()
+  } else if (os == "Windows") {
+    windows()
+  } else {
+    X11()
+  }
+  plot(ggplot_samples(data, source_colors))
+}
+
