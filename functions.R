@@ -1,4 +1,27 @@
 
+fetch <- function(...){
+  tx = if (tclvalue(datatype) == "Taxa") completeTaxaList[as.numeric(tkcurselection(taxa_lb)) + 1] else NULL
+  
+  zoop_data <<- Zoopsynther(Data_type = tclvalue(datatype),
+                            Sources = source_codes[as.numeric(tkcurselection(sources_lb)) + 1],
+                            Size_class = size_codes[as.numeric(tkcurselection(sizes_lb)) + 1],
+                            Taxa = tx,
+                            Months = as.numeric(tkcurselection(months_lb)) + 1, 
+                            Years = as.numeric(tclvalue(min_yr)):as.numeric(tclvalue(max_yr)),
+                            All_env = FALSE) |> 
+    prep_samples()
+}
+
+fetch_and_tkrreplot <- function(...){
+  fetch()
+  tkrplot::tkrreplot(zoop_plot)
+}
+
+plot_zoop <- function(...){
+  if (is.null(zoop_data)) return() # too early...
+  plot_samples(zoop_data, source_colors)
+}
+
 prep_samples <- function(data){
   tmp = data |>
     mutate(MonthNum = month(Date)) |> 
