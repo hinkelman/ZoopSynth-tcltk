@@ -6,7 +6,6 @@ library(zooper)
 library(lubridate)
 library(dplyr)
 library(ggplot2)
-library(plotly)
 
 source("functions.R")
 
@@ -21,7 +20,7 @@ tclServiceMode(FALSE)
 base <- tktoplevel()
 tkwm.title(base, "ZoopSynth")
 
-datatype = tclVar("Taxa")
+datatype = tclVar("Community")
 min_yr = tclVar(1972)
 max_yr = tclVar(2020)
 months = tclVar()
@@ -32,11 +31,16 @@ tclvalue(sources) = c("Environmental Monitoring Program (EMP)", "Fish Restoratio
                       "Directed Outflow Project (DOP)")
 size_classes = tclVar()
 tclvalue(size_classes) = size_codes
+taxa = tclVar()
+tclvalue(taxa) = completeTaxaList
 
 fetch_and_plot <- function(...){
+  tx = if (tclvalue(datatype) == "Taxa") completeTaxaList[as.numeric(tkcurselection(taxa_lb)) + 1] else NULL
+  
   zoop_data <<- Zoopsynther(Data_type = tclvalue(datatype),
                             Sources = source_codes[as.numeric(tkcurselection(sources_lb)) + 1],
                             Size_class = size_codes[as.numeric(tkcurselection(sizes_lb)) + 1],
+                            Taxa = tx,
                             Months = as.numeric(tkcurselection(months_lb)) + 1, 
                             Years = as.numeric(tclvalue(min_yr)):as.numeric(tclvalue(max_yr)),
                             All_env = FALSE) |> 
@@ -57,14 +61,18 @@ sizes_lb = tklistbox(mainframe, listvariable = size_classes, selectmode = "multi
                      exportselection = FALSE, height = 3)
 months_lb = tklistbox(mainframe, listvariable = months, selectmode = "multiple", 
                       exportselection = FALSE, height = 6)
-zoop_plot = tkrplot(mainframe, plot_zoop, hscale = 2)
+taxa_lb = tklistbox(mainframe, listvariable = taxa, selectmode = "multiple", 
+                      exportselection = FALSE, height = 6, state = "disabled")
+zoop_plot = tkrplot(mainframe, plot_zoop, vscale = 1.2, hscale = 2)
 
 tkgrid(mainframe)
 tkgrid(ttklabel(mainframe, text = "Data Type"),
        row = 0, column = 0, sticky = "w", padx = 5, pady = 5)
-tkgrid(ttkradiobutton(mainframe, text = "Taxa", value = "Taxa", variable = datatype),
+tkgrid(ttkradiobutton(mainframe, text = "Taxa", value = "Taxa", variable = datatype,
+                      command = function(...) tkconfigure(taxa_lb, state = "normal")),
        row = 1, column = 0, sticky = "w", padx = 5)
-tkgrid(ttkradiobutton(mainframe, text = "Community", value = "Community", variable = datatype),
+tkgrid(ttkradiobutton(mainframe, text = "Community", value = "Community", variable = datatype,
+                      command = function(...) tkconfigure(taxa_lb, state = "disabled")),
        row = 1, column = 2, sticky = "w", padx = 5)
 
 tkgrid(ttklabel(mainframe, text = "Sources"),
@@ -90,10 +98,14 @@ tkgrid(ttklabel(mainframe, text = "Months"),
        row = 8, column = 0, sticky = "we", padx = 5, pady = 5)
 tkgrid(months_lb, row = 9, column = 0, columnspan = 3, sticky = "we", padx = 5)
 
-tkgrid(tkbutton(mainframe, text = "Run", command = fetch_and_plot), 
-       row = 10, column = 0, columnspan = 3, sticky = "we", padx = 5, pady = 5)
+tkgrid(ttklabel(mainframe, text = "Taxa"),
+       row = 10, column = 0, sticky = "we", padx = 5, pady = 5)
+tkgrid(taxa_lb, row = 11, column = 0, columnspan = 3, sticky = "we", padx = 5)
 
-tkgrid(zoop_plot, row = 1, column = 3, rowspan = 10, sticky = "nwes",
+tkgrid(tkbutton(mainframe, text = "Run", command = fetch_and_plot), 
+       row = 12, column = 0, columnspan = 3, sticky = "we", padx = 5, pady = 5)
+
+tkgrid(zoop_plot, row = 0, column = 3, rowspan = 13, sticky = "nwes",
        padx = 5, pady = 5)
 
 for (i in c(0, 2)) tkselection.set(sources_lb, i)
