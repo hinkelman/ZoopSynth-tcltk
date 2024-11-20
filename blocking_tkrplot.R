@@ -1,4 +1,5 @@
 ### This version provides no information on long-running processes that block the GUI ###
+### Plot is embedded within the app window via tkrplot                                ###
 
 library(tcltk)
 library(tkrplot)
