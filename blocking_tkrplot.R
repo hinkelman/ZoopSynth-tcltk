@@ -113,3 +113,4 @@ tkselection.set(sizes_lb, 1)
 for (i in 5:7) tkselection.set(months_lb, i)
 
 tclServiceMode(TRUE)
+tkwait.window(base)
