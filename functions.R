@@ -9,8 +9,8 @@ prep_samples <- function(data){
     summarise(N_samples = n(), .groups = "drop")
 }
 
-plot_samples <- function(data){
-  ggplot(data, aes(x=Year, y = N_samples, fill = Source)) +
+plot_samples <- function(data, source_colors){
+  p = ggplot(data, aes(x=Year, y = N_samples, fill = Source)) +
     geom_bar(stat = "identity") +
     facet_wrap(~ Month) +
     coord_cartesian(expand = 0) +
@@ -21,5 +21,6 @@ plot_samples <- function(data){
           strip.background = element_blank(), 
           text = element_text(size = 14), 
           panel.spacing.x = unit(15, "points")) +
-    scale_fill_manual(name = "Source", values = myColors)
+    scale_fill_manual(name = "Source", values = source_colors)
+  plot(p)
 }
