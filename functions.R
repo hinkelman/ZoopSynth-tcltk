@@ -34,8 +34,11 @@ fetch_and_tkrreplot <- function(...){
 }
 
 tkrplot_zoop <- function(...){
-  if (is.null(zoop_data)) return() # too early...
-  tkrplot_samples(zoop_data, source_colors)
+  if (is.null(zoop_data)){
+    plot(ggplot())
+  } else {
+    tkrplot_samples(zoop_data, source_colors)
+  }
 }
 
 fetch_and_plot <- function(...){
@@ -44,8 +47,27 @@ fetch_and_plot <- function(...){
 }
 
 plot_zoop <- function(...){
-  if (is.null(zoop_data)) return() # too early...
   plot_samples(zoop_data, source_colors)
+}
+
+tkrplot_samples <- function(data, source_colors){
+  # plots in window provided by trkplot
+  plot(ggplot_samples(data, source_colors))
+}
+
+plot_samples <- function(data, source_colors){
+  # need to open device window before plotting
+  # set the device type based on the OS
+  os = Sys.info()[['sysname']]
+  if (os == "Darwin"){
+    quartz(width = 12)
+  } else if (os == "Windows") {
+    windows(width = 12)
+  } else {
+    X11(width = 12)
+  }
+  
+  plot(ggplot_samples(data, source_colors))
 }
 
 ggplot_samples <- function(data, source_colors){
@@ -60,23 +82,3 @@ ggplot_samples <- function(data, source_colors){
           panel.spacing.x = unit(15, "points")) +
     scale_color_manual(name = "Source", values = source_colors)
 }
-
-tkrplot_samples <- function(data, source_colors){
-  # plots in window provided by trkplot
-  plot(ggplot_samples(data, source_colors))
-}
-
-plot_samples <- function(data, source_colors){
-  # need to open device window before plotting
-  # set the device type based on the OS
-  os = Sys.info()[['sysname']]
-  if (os == "Darwin"){
-    quartz()
-  } else if (os == "Windows") {
-    windows()
-  } else {
-    X11()
-  }
-  plot(ggplot_samples(data, source_colors))
-}
-
