@@ -1,14 +1,18 @@
 
 fetch <- function(...){
-  tx = if (tclvalue(datatype) == "Taxa") completeTaxaList[as.numeric(tkcurselection(taxa_lb)) + 1] else NULL
+  tx = NULL
+  if (tclvalue(datatype) == "Taxa"){
+    tx = completeTaxaList[as.numeric(tkcurselection(taxa_lb)) + 1]
+  }
   
-  zoop_data <<- Zoopsynther(Data_type = tclvalue(datatype),
-                            Sources = source_codes[as.numeric(tkcurselection(sources_lb)) + 1],
-                            Size_class = size_codes[as.numeric(tkcurselection(sizes_lb)) + 1],
-                            Taxa = tx,
-                            Months = as.numeric(tkcurselection(months_lb)) + 1, 
-                            Years = as.numeric(tclvalue(min_yr)):as.numeric(tclvalue(max_yr)),
-                            All_env = FALSE) |> 
+  zoop_data <<- Zoopsynther(
+    Data_type = tclvalue(datatype),
+    Sources = source_codes[as.numeric(tkcurselection(sources_lb)) + 1],
+    Size_class = size_codes[as.numeric(tkcurselection(sizes_lb)) + 1],
+    Taxa = tx,
+    Months = as.numeric(tkcurselection(months_lb)) + 1, 
+    Years = as.numeric(tclvalue(min_yr)):as.numeric(tclvalue(max_yr)),
+    All_env = FALSE) |> 
     prep_samples()
 }
 
@@ -41,18 +45,14 @@ tkrplot_zoop <- function(...){
   }
 }
 
-fetch_and_plot <- function(...){
-  fetch()
-  plot_zoop()
-}
-
-plot_zoop <- function(...){
-  plot_samples(zoop_data, source_colors)
-}
-
 tkrplot_samples <- function(data, source_colors){
   # plots in window provided by trkplot
   plot(ggplot_samples(data, source_colors))
+}
+
+fetch_and_plot <- function(...){
+  fetch()
+  plot_samples(zoop_data, source_colors)
 }
 
 plot_samples <- function(data, source_colors){
@@ -75,7 +75,6 @@ ggplot_samples <- function(data, source_colors){
     geom_line() +
     geom_point(size = 1) +
     facet_wrap(~ Month) +
-    scale_x_continuous(breaks = function(x) unique(floor(pretty(seq(min(x), max(x)), n = 4)))) +
     ylab("Number of plankton samples") +
     theme_minimal() +
     theme(text = element_text(size = 14),
