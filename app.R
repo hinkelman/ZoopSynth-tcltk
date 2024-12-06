@@ -1,5 +1,3 @@
-### This version provides no information on long-running processes that block the GUI ###
-
 # loads packages and global variables
 source("globals.R")
 # need to source functions.R before tcl_vars.R

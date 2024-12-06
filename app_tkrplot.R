@@ -1,5 +1,4 @@
-### This version provides no information on long-running processes that block the GUI ###
-### Plot is embedded within the app window via tkrplot                                ###
+### Plot is embedded within the app window via tkrplot
 
 # loads packages and global variables
 source("globals.R")
