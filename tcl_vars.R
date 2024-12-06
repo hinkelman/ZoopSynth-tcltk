@@ -32,6 +32,10 @@ months_lb = tklistbox(mainframe, listvariable = months, selectmode = "multiple",
 taxa_lb = tklistbox(mainframe, listvariable = taxa, selectmode = "multiple", 
                     exportselection = FALSE, height = 6, state = "disabled")
 
+# need to loop through selections when not consecutive
 for (i in c(0, 2)) tkselection.set(sources_lb, i)
+# only select one size class initially
 tkselection.set(sizes_lb, 1)
-for (i in 5:7) tkselection.set(months_lb, i)
+# if consecutive, can specify first and last index to select multiple
+tkselection.set(months_lb, 5, 7)
+# indexing is 0-based so this selects Jun-Aug
