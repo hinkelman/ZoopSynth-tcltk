@@ -18,6 +18,7 @@ grid_inputs()
 # add run button with correct command
 tkgrid(tkbutton(mainframe, text = "Run", command = fetch_and_tkrreplot), 
        row = 12, column = 0, columnspan = 3, sticky = "we", padx = 5, pady = 5)
+tkbind(base, "<Return>", fetch_and_tkrreplot)
 # add plot window
 tkgrid(zoop_plot, row = 0, column = 3, rowspan = 13, sticky = "nwes",
        padx = 5, pady = 5)

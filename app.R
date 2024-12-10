@@ -13,6 +13,7 @@ grid_inputs()
 # add run button with correct command
 tkgrid(tkbutton(mainframe, text = "Run", command = fetch_and_plot), 
        row = 12, column = 0, columnspan = 3, sticky = "we", padx = 5, pady = 5)
+tkbind(base, "<Return>", fetch_and_plot)
 
 # show UI
 tclServiceMode(TRUE)
